@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".activity.HomeAct">
+
+    <!-- TextView hiển thị ngày hiện tại -->
+    <TextView
+        android:id="@+id/tvCurrentDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ngày hiện tại"
+        android:textSize="18sp"
+        android:layout_gravity="center_horizontal"
+        android:paddingBottom="8dp"/>
+
+    <!-- TextView hiển thị tổng thu/tổng chi -->
+    <TextView
+        android:id="@+id/tvTotalIncomeExpense"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tổng thu/tổng chi"
+        android:textSize="18sp"
+        android:layout_gravity="center_horizontal"
+        android:paddingBottom="8dp"/>
+
+    <!-- ListView hiển thị danh sách thu/chi -->
+    <ListView
+        android:id="@+id/lvIncomeExpenseList"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:divider="@android:color/darker_gray"
+        android:dividerHeight="1dp"/>
+
+    <!-- Button Thêm mới -->
+    <Button
+        android:id="@+id/btnAddNew"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Thêm mới"
+        android:layout_gravity="center_horizontal"
+        android:paddingTop="8dp"/>
+</LinearLayout>
