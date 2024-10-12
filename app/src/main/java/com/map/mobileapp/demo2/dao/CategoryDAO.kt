@@ -1,5 +1,6 @@
 package com.map.mobileapp.demo2.dao
 
+import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
@@ -43,6 +44,75 @@ class CategoryDAO(context: Context) {
         db.close()
 
         return categories
+    }
+
+    // Get all categories
+    fun getAllCategories(): List<Category> {
+        val categories = mutableListOf<Category>()
+        val db: SQLiteDatabase = dbHelper.readableDatabase
+        val cursor: Cursor = db.rawQuery("SELECT * FROM tblCategory", null)
+
+        while (cursor.moveToNext()) {
+            val id = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
+            val name = cursor.getString(cursor.getColumnIndexOrThrow("name"))
+            val idParent = cursor.getInt(cursor.getColumnIndexOrThrow("idParent"))
+            val icon = cursor.getString(cursor.getColumnIndexOrThrow("icon"))
+            val note = cursor.getString(cursor.getColumnIndexOrThrow("note"))
+
+            val category = Category(id, name, idParent, icon, note)
+            categories.add(category)
+        }
+
+        cursor.close()
+        db.close()
+        return categories
+    }
+
+    // Add a new category to the database and return the new category ID
+    fun addCategoryAndGetId(c: Category): Long {
+        val db: SQLiteDatabase = dbHelper.writableDatabase
+        val values = ContentValues().apply {
+            put("name", c.getName())
+            put("idParent", c.getIdParent())
+            put("icon", c.getIcon())
+            put("note", c.getNote())
+        }
+        val result = db.insert("tblCategory", null, values)
+        db.close()
+        return result
+    }
+
+    // Link the new category with InOut type in tblCatInOut
+    fun addCatInOut(categoryId: Int, inOutId: Int): Boolean {
+        val db: SQLiteDatabase = dbHelper.writableDatabase
+        val values = ContentValues().apply {
+            put("idCat", categoryId)
+            put("idInOut", inOutId)
+        }
+        val result = db.insert("tblCatInOut", null, values)
+        db.close()
+        return result != -1L
+    }
+
+    // Get a category by its ID
+    fun getCategoryById(id: Int): Category? {
+        val db: SQLiteDatabase = dbHelper.readableDatabase
+        val cursor: Cursor = db.rawQuery("SELECT * FROM tblCategory WHERE id = ?", arrayOf(id.toString()))
+
+        return if (cursor.moveToFirst()) {
+            val categoryId = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
+            val name = cursor.getString(cursor.getColumnIndexOrThrow("name"))
+            val idParent = cursor.getInt(cursor.getColumnIndexOrThrow("idParent"))
+            val icon = cursor.getString(cursor.getColumnIndexOrThrow("icon"))
+            val note = cursor.getString(cursor.getColumnIndexOrThrow("note"))
+
+            val category = Category(categoryId, name, idParent, icon, note)
+            cursor.close()
+            category
+        } else {
+            cursor.close()
+            null
+        }
     }
 
 }

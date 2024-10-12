@@ -4,6 +4,8 @@ import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuItem
+import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.map.mobileapp.demo2.R
@@ -29,6 +31,8 @@ class AddTransaction : AppCompatActivity() {
     private lateinit var etDate: EditText
     private lateinit var etNote: EditText
     private lateinit var btnAdd: Button
+    private lateinit var btnReset: Button
+    private lateinit var imageView: ImageView
     private lateinit var transactionDAO: TransactionDAO
     private lateinit var categoryDAO: CategoryDAO
     private val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
@@ -43,7 +47,6 @@ class AddTransaction : AppCompatActivity() {
         categoryDAO = CategoryDAO(this)
 
         // Initialize views
-        etName = findViewById(R.id.etName)
         etDate = findViewById(R.id.etDate)
         etAmount = findViewById(R.id.etAmount)
         etNote = findViewById(R.id.etNote)
@@ -52,6 +55,8 @@ class AddTransaction : AppCompatActivity() {
         radioButtonIncome = findViewById(R.id.radioButtonIncome)
         radioButtonExpense = findViewById(R.id.radioButtonExpense)
         btnAdd = findViewById(R.id.btnAdd)
+        btnReset = findViewById(R.id.btnReset)
+        imageView = findViewById(R.id.imageView_menu)
 
         // Set up the date picker
         etDate.setOnClickListener {
@@ -69,9 +74,29 @@ class AddTransaction : AppCompatActivity() {
         // Set default selection to Income
         radioButtonIncome.isChecked = true
 
+        // Thiết lập sự kiện click cho ImageView để hiển thị PopupMenu
+        imageView.setOnClickListener { view: View ->
+            showPopupMenu(view)
+        }
+
         // Handle Add button click
         btnAdd.setOnClickListener {
             addTransaction()
+        }
+
+        // Handle reset button click
+        btnReset.setOnClickListener {
+            resetFields()
+        }
+
+        // Check if we need to refresh categories
+        if (intent.getBooleanExtra("refreshCategories", false)) {
+            // Determine which categories to load based on the selected radio button
+            if (radioButtonIncome.isChecked) {
+                loadCategories(true)
+            } else {
+                loadCategories(false)
+            }
         }
     }
 
@@ -96,32 +121,54 @@ class AddTransaction : AppCompatActivity() {
         // Fetch categories based on the selected type (Income or Expense)
         val categories = categoryDAO.searchByInOut(isIncome)
 
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, categories)
+        // Create a custom ArrayAdapter to display only the category names
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, categories.map { it.getName() })
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinnerCategory.adapter = adapter
 
         // Set listener to capture the selected category
         spinnerCategory.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: android.view.View?, position: Int, id: Long) {
-                selectedCategory = categories[position] // Vẫn giữ selectedCategory là Category
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                selectedCategory = categories[position] // Keep selectedCategory as Category
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
                 selectedCategory = null
             }
         }
+    }
 
+
+    private fun showPopupMenu(view: View) {
+        // Tạo PopupMenu
+        val popupMenu = PopupMenu(this, view)
+        popupMenu.menuInflater.inflate(R.menu.menu_add_category, popupMenu.menu)
+
+        // Xử lý sự kiện khi chọn item trong menu
+        popupMenu.setOnMenuItemClickListener { item: MenuItem ->
+            when (item.itemId) {
+                R.id.menu_add -> {
+                    // Chuyển sang AddCategory khi chọn "Add"
+                    val intent = Intent(this, AddCategory::class.java)
+                    startActivity(intent)
+                    true
+                }
+                else -> false
+            }
+        }
+
+        // Hiển thị menu
+        popupMenu.show()
     }
 
     private fun addTransaction() {
         // Gather input values
-        val name = etName.text.toString()
         val amountStr = etAmount.text.toString()
         val dateStr = etDate.text.toString()
         val note = etNote.text.toString()
 
         // Validate inputs
-        if (name.isEmpty() || amountStr.isEmpty() || dateStr.isEmpty() || selectedCategory == null) {
+        if (amountStr.isEmpty() || dateStr.isEmpty() || selectedCategory == null) {
             Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
             return
         }
@@ -146,6 +193,9 @@ class AddTransaction : AppCompatActivity() {
         } else {
             InOut(id = 2, name = "Expense") // Assuming id=2 for Expense
         }
+
+        // Set name based on InOut
+        val name = if (radioButtonIncome.isChecked) "Income" else "Expense"
 
         // Create CatInOut object
         val catInOut = CatInOut(
@@ -177,5 +227,11 @@ class AddTransaction : AppCompatActivity() {
         }
     }
 
-
+    // Reset the fields to their default state
+    private fun resetFields() {
+        etAmount.text.clear()
+        etDate.text.clear()
+        etNote.text.clear()
+        spinnerCategory.setSelection(0)
+    }
 }

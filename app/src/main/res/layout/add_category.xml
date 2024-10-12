@@ -1,138 +1,133 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
     android:background="@color/white"
-    tools:context=".activity.AddTransaction">
+    android:gravity="center_horizontal">
 
     <!-- Title -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Thêm giao dịch"
+        android:text="Add Category"
         android:textSize="24sp"
         android:textStyle="bold"
-        android:layout_gravity="center_horizontal"
-        android:paddingBottom="16dp"
-        android:textColor="@color/black"/>
+        android:layout_gravity="center"
+        android:textColor="@color/black"
+        android:paddingBottom="24dp" />
 
-    <!-- RadioGroup for Income/Expense -->
-    <RadioGroup
-        android:id="@+id/radioGroup"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:paddingBottom="16dp">
-
-        <RadioButton
-            android:id="@+id/radioButtonIncome"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Income"
-            android:textColor="@color/black"
-            android:layout_marginEnd="100dp"/>
-
-        <RadioButton
-            android:id="@+id/radioButtonExpense"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Expense"
-            android:textColor="@color/black" />
-    </RadioGroup>
-
-    <!-- Spinner for Category -->
+    <!-- Type -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:gravity="center_vertical"
         android:paddingBottom="16dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Chủ đề"
+            android:text="Type"
             android:textColor="@color/black"
-            android:layout_gravity="center_vertical"
-            android:paddingEnd="8dp"/>
+            android:layout_weight="1"
+            android:textSize="16sp"
+            android:paddingEnd="16dp"/>
 
         <Spinner
-            android:id="@+id/spinnerCategory"
+            android:id="@+id/spnType"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"/>
-
-        <!-- Menu icon -->
-        <ImageView
-            android:id="@+id/imageView_menu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_gravity="end"
-            android:contentDescription="Menu"
-            android:src="@android:drawable/ic_menu_more" />
+            android:layout_weight="2"/>
     </LinearLayout>
 
-    <!-- Date Picker -->
+    <!-- Name -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:gravity="center_vertical"
         android:paddingBottom="16dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Ngày"
+            android:text="Name"
             android:textColor="@color/black"
-            android:layout_gravity="center_vertical"
-            android:paddingEnd="8dp"/>
+            android:layout_weight="1"
+            android:textSize="16sp"
+            android:paddingEnd="16dp"/>
 
         <EditText
-            android:id="@+id/etDate"
+            android:id="@+id/edtName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="Chọn ngày"
-            android:focusable="false"
-            android:clickable="true"
-            />
+            android:layout_weight="2"
+            android:hint="Enter name of category"
+            android:padding="8dp"
+            android:textColor="@color/black"
+            android:textSize="16sp"/>
     </LinearLayout>
 
-    <!-- Amount -->
+    <!--  Icon-->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:gravity="center_vertical"
         android:paddingBottom="16dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Amount"
+            android:text="Icon"
             android:textColor="@color/black"
-            android:layout_gravity="center_vertical"
-            android:paddingEnd="8dp"/>
+            android:layout_weight="1"
+            android:textSize="16sp"
+            android:paddingEnd="16dp"/>
 
         <EditText
-            android:id="@+id/etAmount"
+            android:id="@+id/edtIcon"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="Nhập số tiền"
-            android:inputType="numberDecimal"
-            />
+            android:layout_weight="2"
+            android:hint="Icon string tạm thời"
+            android:padding="8dp"
+            android:textColor="@color/black"
+            android:textSize="16sp"/>
     </LinearLayout>
 
-    <!-- Note -->
+    <!-- Parent -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingBottom="24dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Parent"
+            android:textColor="@color/black"
+            android:layout_weight="1"
+            android:textSize="16sp"
+            android:paddingEnd="16dp"/>
+
+        <Spinner
+            android:id="@+id/spnParent"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"/>
+    </LinearLayout>
+
+    <!--  Note  -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
         android:paddingBottom="16dp">
 
         <TextView
@@ -140,16 +135,19 @@
             android:layout_height="wrap_content"
             android:text="Note"
             android:textColor="@color/black"
-            android:layout_gravity="center_vertical"
-            android:paddingEnd="8dp"/>
+            android:layout_weight="1"
+            android:textSize="16sp"
+            android:paddingEnd="16dp"/>
 
         <EditText
-            android:id="@+id/etNote"
+            android:id="@+id/edtNote"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="Nhập ghi chú"
-            />
+            android:layout_weight="2"
+            android:hint="Enter note for new category"
+            android:padding="8dp"
+            android:textColor="@color/black"
+            android:textSize="16sp"/>
     </LinearLayout>
 
     <!-- Buttons -->
