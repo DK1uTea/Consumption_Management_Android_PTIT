@@ -7,15 +7,34 @@
     android:padding="16dp"
     tools:context=".activity.HomeAct">
 
-    <!-- TextView hiển thị ngày hiện tại -->
-    <TextView
-        android:id="@+id/tvCurrentDate"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Ngày hiện tại"
-        android:textSize="18sp"
-        android:layout_gravity="center_horizontal"
-        android:paddingBottom="8dp"/>
+        android:orientation="horizontal">
+
+        <!-- TextView hiển thị ngày hiện tại -->
+        <TextView
+            android:id="@+id/tvCurrentDate"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Ngày hiện tại"
+            android:textSize="18sp"
+            android:gravity="center"
+            android:paddingBottom="8dp"/>
+
+        <!-- Button để mở CalendarActivity -->
+        <Button
+            android:id="@+id/btnChooseDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Chọn"
+            android:minWidth="50dp"
+            android:padding="5dp"
+            android:layout_gravity="end"
+            android:paddingBottom="8dp"/>
+    </LinearLayout>
+
 
     <!-- TextView hiển thị tổng thu/tổng chi -->
     <TextView

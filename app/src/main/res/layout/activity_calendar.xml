@@ -1,0 +1,29 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".activity.CalendarActivity">
+
+    <!-- TextView hiển thị tháng hiện tại -->
+    <TextView
+        android:id="@+id/tvCurrentMonth"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tháng hiện tại"
+        android:textSize="18sp"
+        android:layout_gravity="center_horizontal"
+        android:paddingBottom="8dp" />
+
+    <!-- GridLayout để hiển thị các ngày trong tháng -->
+    <GridLayout
+        android:id="@+id/gridCalendar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:rowCount="6"
+        android:columnCount="7"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"/>
+
+</LinearLayout>

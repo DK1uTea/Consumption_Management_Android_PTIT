@@ -1,5 +1,6 @@
 package com.map.mobileapp.demo2.activity
 
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
@@ -118,23 +119,74 @@ class AddTransaction : AppCompatActivity() {
     }
 
     private fun loadCategories(isIncome: Boolean) {
-        // Fetch categories based on the selected type (Income or Expense)
-        val categories = categoryDAO.searchByInOut(isIncome)
+        // Fetch parent categories based on the selected type (Income or Expense)
+        val parentCategories = categoryDAO.searchByInOut(isIncome).filter { it.getIdParent() == 0 }
+        Log.d("Parent Categories", parentCategories.toString())
 
         // Create a custom ArrayAdapter to display only the category names
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, categories.map { it.getName() })
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, parentCategories.map { it.getName() })
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinnerCategory.adapter = adapter
 
         // Set listener to capture the selected category
         spinnerCategory.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                selectedCategory = categories[position] // Keep selectedCategory as Category
+                val selectedParentCategory = parentCategories[position]
+                val categoryId = selectedParentCategory.getId()
+                if (categoryId != null && categoryDAO.hasChildren(categoryId)) {
+                    showSubCategoryDialog(selectedParentCategory)
+                } else {
+                    // Chỉ cập nhật selectedCategory nếu chưa chọn subcategory trước đó
+                    if (selectedCategory == null || selectedCategory!!.getIdParent() == 0) {
+                        // Set selectedCategory là danh mục cha nếu không có subcategory
+                        selectedCategory = selectedParentCategory
+                        Log.d("Selected cate parent", selectedCategory.toString())
+                    }
+                }
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
                 selectedCategory = null
             }
+        }
+
+    }
+
+    private fun showSubCategoryDialog(parentCategory: Category) {
+        val parentId = parentCategory.getId()
+        if (parentId != null) {
+            val subCategories = categoryDAO.getChildCategories(parentId)
+            val subCategoryNames = subCategories.map { it.getName() }.toTypedArray()
+
+            AlertDialog.Builder(this)
+                .setTitle("Chọn danh mục con")
+                .setItems(subCategoryNames) { _, which ->
+                    // Khi người dùng chọn subcategory, cập nhật selectedCategory
+                    selectedCategory = subCategories[which]
+                    Log.d("Selected cate child", selectedCategory.toString())
+
+                    // Update spinner để hiển thị danh mục con đã chọn
+                    updateSpinnerWithSelectedCategory()
+                }
+                .setNegativeButton("Hủy") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .show()
+        } else {
+            Toast.makeText(this, "Danh mục cha không hợp lệ", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
+    private fun updateSpinnerWithSelectedCategory() {
+        if (selectedCategory != null) {
+            // If a category has been selected, we can set the spinner's text to that category's name
+            val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, listOf(selectedCategory!!.getName()))
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            spinnerCategory.adapter = adapter
+
+            // Optionally, set the spinner to the selected category
+            spinnerCategory.setSelection(0) // Update this based on your use case
         }
     }
 
@@ -196,6 +248,11 @@ class AddTransaction : AppCompatActivity() {
 
         // Set name based on InOut
         val name = if (radioButtonIncome.isChecked) "Income" else "Expense"
+
+        if (selectedCategory == null) {
+            Toast.makeText(this, "Vui lòng chọn danh mục", Toast.LENGTH_SHORT).show()
+            return
+        }
 
         // Create CatInOut object
         val catInOut = CatInOut(

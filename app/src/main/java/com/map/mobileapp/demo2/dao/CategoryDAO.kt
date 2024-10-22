@@ -5,6 +5,8 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.os.PowerManager
+import android.util.Log
 import com.map.mobileapp.demo2.model.Category
 
 class CategoryDAO(context: Context) {
@@ -42,7 +44,7 @@ class CategoryDAO(context: Context) {
 
         cursor.close()
         db.close()
-
+        Log.d("Categories by in out: ", categories.toString())
         return categories
     }
 
@@ -113,6 +115,50 @@ class CategoryDAO(context: Context) {
             cursor.close()
             null
         }
+    }
+
+    // Get child categories by parent ID
+    fun getChildCategories(parentId: Int): List<Category> {
+        val db: SQLiteDatabase = dbHelper.readableDatabase
+        val categories = mutableListOf<Category>()
+
+        val cursor: Cursor = db.rawQuery(
+            "SELECT * FROM tblCategory WHERE idParent = ?", arrayOf(parentId.toString())
+        )
+
+        while (cursor.moveToNext()) {
+            val id = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
+            val name = cursor.getString(cursor.getColumnIndexOrThrow("name"))
+            val idParent = cursor.getInt(cursor.getColumnIndexOrThrow("idParent"))
+            val icon = cursor.getString(cursor.getColumnIndexOrThrow("icon"))
+            val note = cursor.getString(cursor.getColumnIndexOrThrow("note"))
+
+            val category = Category(id, name, idParent, icon, note)
+            categories.add(category)
+        }
+
+        cursor.close()
+        db.close()
+
+        return categories
+    }
+
+    // Check if a category has children
+    fun hasChildren(categoryId: Int): Boolean {
+        val db: SQLiteDatabase = dbHelper.readableDatabase
+        val cursor: Cursor = db.rawQuery(
+            "SELECT COUNT(*) FROM tblCategory WHERE idParent = ?", arrayOf(categoryId.toString())
+        )
+
+        var hasChildren = false
+        if (cursor.moveToFirst()) {
+            hasChildren = cursor.getInt(0) > 0
+        }
+
+        cursor.close()
+        db.close()
+
+        return hasChildren
     }
 
 }

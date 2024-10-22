@@ -10,6 +10,7 @@ import com.map.mobileapp.demo2.model.Category
 import com.map.mobileapp.demo2.model.InOut
 import com.map.mobileapp.demo2.model.Transaction
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
@@ -175,5 +176,41 @@ class TransactionDAO(context: Context) {
         return transactions // Ensure to return the list
     }
 
+    fun getTransactionsByDate(day: Int, month: Int, year: Int): List<Transaction> {
+        val transactions = mutableListOf<Transaction>()
+        val db: SQLiteDatabase = dbHelper.readableDatabase
 
+        val calendar = Calendar.getInstance()
+        calendar.set(year, month, day)
+        val dateString = dateFormat.format(calendar.time)
+
+        val cursor: Cursor = db.rawQuery("SELECT * FROM tblTransaction WHERE date = ?", arrayOf(dateString))
+
+        while (cursor.moveToNext()) {
+            val id = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
+            val name = cursor.getString(cursor.getColumnIndexOrThrow("name"))
+            val amount = cursor.getDouble(cursor.getColumnIndexOrThrow("amount"))
+            val date = dateFormat.parse(cursor.getString(cursor.getColumnIndexOrThrow("date")))
+            val note = cursor.getString(cursor.getColumnIndexOrThrow("note"))
+            val catInOutId = cursor.getInt(cursor.getColumnIndexOrThrow("idCateInOut"))
+            val catInOut = getCatInOutById(catInOutId)
+
+            if (catInOut != null) {
+                val transaction = Transaction(
+                    id = id,
+                    name = name,
+                    catInOut = catInOut,
+                    amount = amount,
+                    date = date,
+                    note = note
+                )
+                transactions.add(transaction)
+            }
+        }
+
+        cursor.close()
+        db.close()
+
+        return transactions
+    }
 }
