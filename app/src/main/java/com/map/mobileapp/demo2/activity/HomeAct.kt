@@ -2,10 +2,16 @@ package com.map.mobileapp.demo2.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.ListView
+import android.widget.PopupMenu
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.map.mobileapp.demo2.R
 import com.map.mobileapp.demo2.adapter.TransactionAdapter
@@ -75,6 +81,51 @@ class HomeAct : AppCompatActivity() {
             val transactionsByDate = transactionDAO.getTransactionsByDate(day, month, year)
             displayTransactions(transactionsByDate)
         }
+
+        // Set up the ImageView to show the popup menu
+        val imageViewMenu = findViewById<ImageView>(R.id.imageView_menu_home)
+        imageViewMenu.setOnClickListener { view ->
+            showPopupMenu(view)
+        }
+    }
+
+    private fun showPopupMenu(view: View) {
+        // Create PopupMenu
+        val popupMenu = PopupMenu(this, view)
+        popupMenu.menuInflater.inflate(R.menu.menu_home, popupMenu.menu)
+
+        // Handle menu item clicks
+        popupMenu.setOnMenuItemClickListener { item: MenuItem ->
+            when (item.itemId) {
+                R.id.menu_statistics -> {
+                    showStatisticsOptions()
+                    true
+                }
+                else -> false
+            }
+        }
+
+        // Show the menu
+        popupMenu.show()
+    }
+
+    private fun showStatisticsOptions() {
+        val options = arrayOf("Theo danh mục", "Theo thời gian")
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Chọn loại thống kê")
+        builder.setItems(options) { _, which ->
+            when (which) {
+                0 -> {
+                    val intent = Intent(this, StatisticsByCategoryAct::class.java)
+                    startActivity(intent)
+                }
+                1 -> {
+                    val intent = Intent(this, StatisticsByTimeAct::class.java)
+                    startActivity(intent)
+                }
+            }
+        }
+        builder.show()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -112,12 +163,25 @@ class HomeAct : AppCompatActivity() {
         var totalIncome = 0.0
         var totalExpense = 0.0
         for (transaction in transactions) {
-            if (transaction.getName() == "Income") {
+            if (transaction.getCatInOut().getInOut().getName() == "Income") {
                 totalIncome += transaction.getAmount()
-            } else if (transaction.getName() == "Expense") {
+            } else if (transaction.getCatInOut().getInOut().getName() == "Expense") {
                 totalExpense += transaction.getAmount()
             }
         }
-        tvTotalIncomeExpense.text = "Tổng thu: $totalIncome - Tổng chi: $totalExpense"
+        tvTotalIncomeExpense.text = "Tổng thu: ${formatAmount(totalIncome)} - Tổng chi: ${formatAmount(totalExpense)}"
     }
+
+    private fun formatAmount(amount: Double): String {
+        return when {
+            amount < 100 -> "${amount.toInt()} đ"
+            amount < 1_000_000 -> "${(amount / 1000).format(1)} K"
+            amount < 1_000_000_000 -> "${(amount / 1_000_000).format(1)} M"
+            else -> "${(amount / 1_000_000_000).format(1)} B"
+        }
+    }
+
+    // Extension function to format doubles with fixed decimal places
+    private fun Double.format(digits: Int) = "%.${digits}f".format(this)
+
 }

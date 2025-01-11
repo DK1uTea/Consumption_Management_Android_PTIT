@@ -12,6 +12,16 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
+        <!-- Menu icon -->
+        <ImageView
+            android:id="@+id/imageView_menu_home"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_gravity="end"
+            android:contentDescription="Menu"
+            android:src="@android:drawable/ic_menu_more" />
+
         <!-- TextView hiển thị ngày hiện tại -->
         <TextView
             android:id="@+id/tvCurrentDate"
